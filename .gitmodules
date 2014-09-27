@@ -1,0 +1,3 @@
+[submodule "semanticsimilarity"]
+	path = semanticsimilarity
+	url = https://github.com/chenditc/semanticSimilarity_word2vec.git
