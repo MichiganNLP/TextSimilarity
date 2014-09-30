@@ -3,7 +3,7 @@
 
 # SEMAFOR home: Please change the following path to the absolute path
 # where you decompressed SEMAFOR.
-SEMAFOR_HOME="$HOME/Coding/study/indep/TextSimilarity/evan/semafor"
+SEMAFOR_HOME="$HOME/semafor_path"
 
 # Temporary folder location: Change the path to your custom temp directory
 TEMP_DIR=${SEMAFOR_HOME}/release/temp
@@ -15,7 +15,7 @@ MST_MODE=noserver
 # Location of the MST parser root directory: Please change the
 # following path to the place where you decompressed stackedParserServer
 # (to be downloaded from http://semafor-semantic-parser.googlecode.com/files/stackedParserServer.tgz).
-MST_PARSER_HOME="$HOME/Coding/study/indep/TextSimilarity/evan/stackedParserServer"
+MST_PARSER_HOME="$HOME/stackedParserServer"
 
 # Name of the machine where the MST parser server is running
 # default is localhost, change if necessary.

@@ -8,3 +8,8 @@ word2vec/word2vec
 # corpuses and vectors
 word2vec/text8
 word2vec/vectors.bin
+google-news-corpus
+
+# semafor
+semafor-models/
+semafor/release/config
