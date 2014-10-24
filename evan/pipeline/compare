@@ -1,7 +1,17 @@
 #!/usr/bin/env bash
 set -e
 
+OUTPUT_DIRECTORY='output'
+
 if [ $# != 1 ]; then
   echo 'Please provide 1 argument, a path to a file.' 1>&2
   exit 1
 fi
+
+if [ -d "$OUTPUT_DIRECTORY" ]; then
+  rm -rf "$OUTPUT_DIRECTORY"
+fi
+mkdir -p "$OUTPUT_DIRECTORY"
+
+untabbed=$(cat "$1" | sed "s|\t|\n|")
+echo "$untabbed" > "$OUTPUT_DIRECTORY/untabbed.txt"
