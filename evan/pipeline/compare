@@ -12,6 +12,3 @@ input_file="$output/untabbed.txt" ./libexec/get_openie_output.sh > "$output/open
 
 echo 'Parsing OpenIE output'
 ./libexec/parse_openie.py "$output"
-
-echo 'Cleaning up'
-./libexec/unset_globals.sh
