@@ -1,17 +1,14 @@
 #!/usr/bin/env bash
 set -e
 
-OUTPUT_DIRECTORY='output'
+echo 'Creating output directory'
+output="$(./libexec/make_output_directory.sh)"
 
-if [ $# != 1 ]; then
-  echo 'Please provide 1 argument, a path to a file.' 1>&2
-  exit 1
-fi
+echo 'Reformatting sentences'
+filename="$1" ./libexec/untab_sentences.sh > "$output/untabbed.txt"
 
-if [ -d "$OUTPUT_DIRECTORY" ]; then
-  rm -rf "$OUTPUT_DIRECTORY"
-fi
-mkdir -p "$OUTPUT_DIRECTORY"
+echo 'Running through OpenIE'
+input_file="$output/untabbed.txt" ./libexec/get_openie_output.sh > "$output/openie_output.txt"
 
-untabbed=$(cat "$1" | sed "s|\t|\n|")
-echo "$untabbed" > "$OUTPUT_DIRECTORY/untabbed.txt"
+echo 'Cleaning up'
+./libexec/unset_globals.sh
