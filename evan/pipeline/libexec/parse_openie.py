@@ -2,6 +2,7 @@
 
 from sys import argv
 import os
+import string
 
 def output_sentence(index, sentence, alternatives, permuations_path):
     output_path = os.path.join(permuations_path, str(index) + '.txt')
@@ -18,7 +19,7 @@ def extract_sentences(file):
     for line in file:
         sentence, alternatives = parse_line(line.rstrip())
         if sentence not in sentences:
-            sentences[sentence] = []
+            sentences[sentence] = [sentence]
         sentences[sentence].append(alternatives)
     return sentences
 
@@ -33,7 +34,7 @@ def parse_alternatives(alternatives):
     for alt in alternatives:
         formatted = alt.split('(', 1)[1].split(',', 1)[0]
         result.append(formatted)
-    return result
+    return string.join(result)
 
 def main(output_path):
 
