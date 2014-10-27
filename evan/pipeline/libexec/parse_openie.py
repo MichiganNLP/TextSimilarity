@@ -1,5 +1,6 @@
 #!/usr/bin/env python2
 
+from sets import Set
 from sys import argv
 import os
 import string
@@ -17,19 +18,19 @@ def output_sentence(index, sentence, alternatives, permuations_path):
 def extract_sentences(file):
     sentences = {}
     for line in file:
-        sentence, alternatives = parse_line(line.rstrip())
+        sentence, alternative = parse_line(line.rstrip())
         if sentence not in sentences:
-            sentences[sentence] = [sentence]
-        sentences[sentence].append(alternatives)
+            sentences[sentence] = Set([sentence])
+        sentences[sentence].add(alternative)
     return sentences
 
 def parse_line(line):
     split = line.split('\t')
     sentence = split[-1]
-    alternatives = parse_alternatives(split[2:-1])
-    return (sentence, alternatives)
+    alternative = parse_alternative(split[2:-1])
+    return (sentence, alternative)
 
-def parse_alternatives(alternatives):
+def parse_alternative(alternatives):
     result = []
     for alt in alternatives:
         formatted = alt.split('(', 1)[1].split(',', 1)[0]
@@ -45,8 +46,12 @@ def main(output_path):
     with open(openie_output_path, 'r') as openie_output_file:
         sentences = extract_sentences(openie_output_file)
 
-    for sentence, alternatives in sentences.iteritems():
-        print alternatives
+    for i, sentence in enumerate(sentences):
+        permutations = sentences[sentence]
+        perms_path = os.path.join(permuations_path, str(i + 1) + '.txt')
+        with open(perms_path, 'w') as perm_file:
+            for permutation in permutations:
+                print>>perm_file, permutation
 
 if __name__ == '__main__':
     output_path = argv[1]
