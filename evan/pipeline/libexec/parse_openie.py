@@ -3,55 +3,49 @@
 from sys import argv
 import os
 
-def seek_to_relevant_output(sentence, file):
-    looking_for = '[info] ' + sentence
-    line = ''
-    while line != looking_for:
-        line = file.readline().rstrip()
-        if line == looking_for:
-            file.seek(-len(looking_for) - 1, os.SEEK_CUR)
+def output_sentence(index, sentence, alternatives, permuations_path):
+    output_path = os.path.join(permuations_path, str(index) + '.txt')
+    with open(output_path, 'w') as output_file:
+        if len(alternatives) > 0:
+            permuations = alternatives
+        else:
+            permuations = [sentence]
+        for p in permuations:
+            print >> output_file, p
 
-def echo_sentence(sentence, alternatives):
-    print 'SENTENCE: ' + sentence
-    print 'ALTERNATIVES:',
-    if len(alternatives) == 0:
-        print 'none'
-    else:
-        for i, alternative in enumerate(alternatives):
-            if i != 0:
-                print '             ',
-            print alternative
-    print
+def extract_sentences(file):
+    sentences = {}
+    for line in file:
+        sentence, alternatives = parse_line(line.rstrip())
+        if sentence not in sentences:
+            sentences[sentence] = []
+        sentences[sentence].append(alternatives)
+    return sentences
 
-def remove_openie_info(line):
-    return line[7:]
+def parse_line(line):
+    split = line.split('\t')
+    sentence = split[-1]
+    alternatives = parse_alternatives(split[2:-1])
+    return (sentence, alternatives)
 
-def parse_alternatives(sentences, openie):
-    sentence = None
-    while sentence != '':
-        sentence = sentences.readline().rstrip()
-        if sentence == '':
-            break
-        alternatives = []
-        openie_line = None
-        openie.readline()
-        while openie_line != '':
-            openie_line = remove_openie_info(openie.readline().rstrip())
-            if openie_line == '':
-                break
-            alternatives.append(openie_line)
-        echo_sentence(sentence, alternatives)
+def parse_alternatives(alternatives):
+    result = []
+    for alt in alternatives:
+        formatted = alt.split('(', 1)[1].split(',', 1)[0]
+        result.append(formatted)
+    return result
 
 def main(output_path):
 
-    sentences_path = os.path.join(output_path, 'untabbed.txt')
-    with open(sentences_path, 'r') as sentences_file:
-        first_sentence = sentences_file.readline().rstrip()
-        sentences_file.seek(0)
-        openie_output_path = os.path.join(output_path, 'openie_output.txt')
-        with open(openie_output_path, 'r') as openie_output_file:
-            seek_to_relevant_output(first_sentence, openie_output_file)
-            parse_alternatives(sentences_file, openie_output_file)
+    openie_output_path = os.path.join(output_path, 'openie_output.txt')
+    permuations_path = os.path.join(output_path, 'permuations')
+    os.mkdir(permuations_path)
+
+    with open(openie_output_path, 'r') as openie_output_file:
+        sentences = extract_sentences(openie_output_file)
+
+    for sentence, alternatives in sentences.iteritems():
+        print alternatives
 
 if __name__ == '__main__':
     output_path = argv[1]

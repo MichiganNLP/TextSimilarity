@@ -8,7 +8,7 @@ echo 'Reformatting sentences'
 filename="$1" ./libexec/untab_sentences.sh > "$output/untabbed.txt"
 
 echo 'Running through OpenIE'
-input_file="$output/untabbed.txt" ./libexec/get_openie_output.sh > "$output/openie_output.txt"
+input="$output/untabbed.txt" output="$output/openie_output.txt" ./libexec/get_openie_output.sh
 
 echo 'Parsing OpenIE output'
 ./libexec/parse_openie.py "$output"
