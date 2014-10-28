@@ -40,7 +40,7 @@ def parse_alternative(alternatives):
 def main(output_path):
 
     openie_output_path = os.path.join(output_path, 'openie_output.txt')
-    permuations_path = os.path.join(output_path, 'permuations')
+    permuations_path = os.path.join(output_path, 'permutations')
     os.mkdir(permuations_path)
 
     with open(openie_output_path, 'r') as openie_output_file:

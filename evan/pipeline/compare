@@ -10,5 +10,8 @@ filename="$1" ./libexec/untab_sentences.sh > "$output/untabbed.txt"
 echo 'Running through OpenIE'
 input="$output/untabbed.txt" output="$output/openie_output.txt" ./libexec/get_openie_output.sh
 
-echo 'Parsing OpenIE output'
+echo 'Parsing OpenIE output to get permutations'
 ./libexec/parse_openie.py "$output"
+
+echo 'Running permutations through Semafor'
+output="$output" ./libexec/get_semafor_output.sh
