@@ -18,6 +18,11 @@
 #include <math.h>
 #include <malloc.h>
 #include <ctype.h>
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <map>
+using namespace std;
 
 const long long max_size = 2000;         // max length of strings
 const long long N = 1;                   // number of closest words
@@ -26,17 +31,13 @@ const long long max_w = 50;              // max length of vocabulary entries
 int main(int argc, char **argv) {
 
   FILE *f;
-  FILE *compares;
+  ifstream compare_file(argv[2]);
   char file_name[max_size];
   char word_a[max_size];
   char word_b[max_size];
-  char tmp;
   float len;
   long long words, size, a, b;
-  float *M;
-  float *M_a;
-  float *M_b;
-  char *vocab;
+  map<string, float*> vocab;
 
   if (argc < 3) {
     printf("Usage: ./compare <VECTORS> <TOCOMPARE>\nwhere VECTORS contains word projections and TOCOMPARE contains pairs of words\n");
@@ -51,70 +52,45 @@ int main(int argc, char **argv) {
   }
   fscanf(f, "%lld", &words);
   fscanf(f, "%lld", &size);
-  compares = fopen(argv[2], "r");
-  if (compares == NULL) {
-    printf("Compare file not found\n");
-    return -1;
-  }
 
-  vocab = (char *)malloc(words * max_w * sizeof(char));
-  M = (float *)malloc(words * size * sizeof(float));
-  if (M == NULL) {
-    printf("Cannot allocate memory: %lld MB\n", words * size * sizeof(float) / 1048576);
-    return -1;
-  }
+  cout << words << " words" << endl;
+  cout << "each vector is of size " << size << endl;
 
   for (b = 0; b < words; b++) {
-    a = 0;
+
+    string tmp_word = "";
     while (1) {
-      vocab[b * max_w + a] = fgetc(f);
-      if (feof(f) || (vocab[b * max_w + a] == ' ')) break;
-      if ((a < max_w) && (vocab[b * max_w + a] != '\n')) a++;
+      char tmp_char = toupper(fgetc(f));
+      if ((feof(f)) ||
+          (tmp_char == ' ') ||
+          (tmp_char == '\n')) {
+        break;
+      }
+      tmp_word += tmp_char;
     }
-    vocab[b * max_w + a] = 0;
-    for (a = 0; a < max_w; a++) vocab[b * max_w + a] = toupper(vocab[b * max_w + a]);
-    for (a = 0; a < size; a++) fread(&M[a + b * size], sizeof(float), 1, f);
+
+    vocab[tmp_word] = (float*)malloc(size * sizeof(float));
+    if (vocab[tmp_word] == NULL) {
+      printf("Cannot allocate memory: %lld MB\n", words * size * sizeof(float) / 1048576);
+      return -1;
+    }
+
+    for (a = 0; a < size; a++) fread(&vocab[tmp_word][a], sizeof(float), 1, f);
     len = 0;
-    for (a = 0; a < size; a++) len += M[a + b * size] * M[a + b * size];
+    for (a = 0; a < size; a++) len += vocab[tmp_word][a] * vocab[tmp_word][a];
     len = sqrt(len);
-    for (a = 0; a < size; a++) M[a + b * size] /= len;
+    for (a = 0; a < size; a++) vocab[tmp_word][a] /= len;
   }
   fclose(f);
 
-  M_a = (float *)malloc(words * size * sizeof(float));
-  M_b = (float *)malloc(words * size * sizeof(float));
-  if (M_b == NULL) {
-    printf("Cannot allocate memory: %lld MB\n", words * size * sizeof(float) / 1048576);
-    return -1;
-  }
-
-  while (1) {
-
-    if (feof(compares)) break;
-
-    a = 0;
-    while (1) {
-      tmp = fgetc(compares);
-      if ((tmp == '\n') || (tmp == ' ')) break;
-      if (feof(compares)) break;
-      word_a[a] = toupper(tmp);
-      a ++;
+  while (!compare_file.eof()) {
+    string word_a;
+    string word_b;
+    compare_file >> word_a;
+    compare_file >> word_b;
+    if (word_a.size()) {
+      cout << word_a << " and " << word_b << endl;
     }
-    b = 0;
-    while (1) {
-      tmp = fgetc(compares);
-      if ((tmp == '\n') || (tmp == ' ')) break;
-      if (feof(compares)) break;
-      word_b[b] = toupper(tmp);
-      b ++;
-    }
-
-    if (feof(compares)) break;
-
-    for (long long i = 0; i < words; i ++) {
-      if (!strncmp(a))
-    }
-
   }
 
   /*
