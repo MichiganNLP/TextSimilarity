@@ -9,5 +9,7 @@ cat *.txt > /tmp/combined-permutations
 cd - > /dev/null
 
 cd "$SEMAFOR_RELEASE_DIRECTORY"
-./fnParserDriver.sh /tmp/combined-permutations "$output/semafor_output.xml" 2>&1 /dev/null
+mkdir -p temp
+./fnParserDriver.sh /tmp/combined-permutations "$output/semafor_output.xml"
+rm -rf temp
 cd - > /dev/null

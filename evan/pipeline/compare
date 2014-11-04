@@ -1,17 +1,23 @@
 #!/usr/bin/env bash
 set -e
 
-echo 'Creating output directory'
+status_message() {
+  echo -en '\033[35m'
+  echo "$1"
+  echo -en '\033[0m'
+}
+
+status_message 'Creating output directory'
 output="$(./libexec/make_output_directory.sh)"
 
-echo 'Reformatting sentences'
+status_message 'Reformatting sentences'
 filename="$1" ./libexec/untab_sentences.sh > "$output/untabbed.txt"
 
-echo 'Running through OpenIE'
+status_message 'Running through OpenIE'
 input="$output/untabbed.txt" output="$output/openie_output.txt" ./libexec/get_openie_output.sh
 
-echo 'Parsing OpenIE output to get permutations'
+status_message 'Parsing OpenIE output to get permutations'
 ./libexec/parse_openie.py "$output"
 
-echo 'Running permutations through Semafor'
+status_message 'Running permutations through Semafor'
 output="$output" ./libexec/get_semafor_output.sh
