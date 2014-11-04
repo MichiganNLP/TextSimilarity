@@ -28,15 +28,30 @@ const long long max_size = 2000;         // max length of strings
 const long long N = 1;                   // number of closest words
 const long long max_w = 50;              // max length of vocabulary entries
 
+double cosine_similarity(float* a, float* b, long long size) {
+  cout << "computing similarity..." << endl;
+  long long i;
+  double numerator = 0;
+  double denominator;
+  float a_squared = 0;
+  float b_squared = 0;
+  for (i = 0; i < size; i ++) {
+    cout << "i = " << i << endl;
+    numerator += a[i] * b[i];
+    a_squared += (a[i] * a[i]);
+    b_squared += (b[i] * b[i]);
+  }
+  denominator = sqrt(a_squared) * sqrt(b_squared);
+  return numerator / denominator;
+}
+
 int main(int argc, char **argv) {
 
   FILE *f;
   ifstream compare_file(argv[2]);
   char file_name[max_size];
-  char word_a[max_size];
-  char word_b[max_size];
   float len;
-  long long words, size, a, b;
+  long long num_words, vector_size;
   map<string, float*> vocab;
 
   if (argc < 3) {
@@ -50,17 +65,18 @@ int main(int argc, char **argv) {
     printf("Input file not found\n");
     return -1;
   }
-  fscanf(f, "%lld", &words);
-  fscanf(f, "%lld", &size);
+  fscanf(f, "%lld", &num_words);
+  fscanf(f, "%lld", &vector_size);
 
-  cout << words << " words" << endl;
-  cout << "each vector is of size " << size << endl;
+  cout << "There are " << num_words << " words. ";
+  cout << "Each vector is of size " << vector_size << "." << endl;
 
-  for (b = 0; b < words; b++) {
+  for (long long i = 0; i < num_words; i++) {
 
     string tmp_word = "";
     while (1) {
       char tmp_char = toupper(fgetc(f));
+      cout << tmp_char;
       if ((feof(f)) ||
           (tmp_char == ' ') ||
           (tmp_char == '\n')) {
@@ -69,28 +85,52 @@ int main(int argc, char **argv) {
       tmp_word += tmp_char;
     }
 
-    vocab[tmp_word] = (float*)malloc(size * sizeof(float));
+    /*
+    vocab[tmp_word] = (float*)malloc(vector_size * sizeof(float));
     if (vocab[tmp_word] == NULL) {
-      printf("Cannot allocate memory: %lld MB\n", words * size * sizeof(float) / 1048576);
+      printf("Cannot allocate memory: %lld MB\n", vector_size * sizeof(float) / 1048576);
       return -1;
     }
+    */
 
-    for (a = 0; a < size; a++) fread(&vocab[tmp_word][a], sizeof(float), 1, f);
+    /*
+    for (long long i = 0; i < vector_size; i ++) {
+      float to_add;
+      fread(&to_add, sizeof(float), 1, f);
+      vocab[tmp_word][i] = to_add;
+      cout << tmp_word << ": " << i << ": " << to_add << endl;
+      // fread(&vocab[tmp_word][i], sizeof(float), 1, f);
+    }
+    */
+
+    /*
     len = 0;
     for (a = 0; a < size; a++) len += vocab[tmp_word][a] * vocab[tmp_word][a];
     len = sqrt(len);
     for (a = 0; a < size; a++) vocab[tmp_word][a] /= len;
+    */
   }
   fclose(f);
+  return 0;
 
   while (!compare_file.eof()) {
+
     string word_a;
     string word_b;
     compare_file >> word_a;
     compare_file >> word_b;
-    if (word_a.size()) {
-      cout << word_a << " and " << word_b << endl;
+    if (!word_a.size()) break;
+
+    float* word_a_vector = vocab[word_a];
+    float* word_b_vector = vocab[word_b];
+
+    for (long long i = 0; i < vector_size; i ++) {
+      cout << word_a_vector[i] << endl;
     }
+
+    /* double similarity = cosine_similarity(word_a_vector, word_b_vector, size); */
+    /* cout << "similarity = " << similarity << endl; */
+
   }
 
   /*
