@@ -2,7 +2,7 @@
 set -e
 
 DIRNAME="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$DIRNAME/config.sh"
+source "$DIRNAME/config"
 
 cd "$OPENIE_DIRECTORY"
 sbt "run-main edu.knowitall.openie.OpenIECli --format column $input $output"

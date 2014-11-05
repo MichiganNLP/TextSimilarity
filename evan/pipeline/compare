@@ -10,6 +10,9 @@ status_message() {
 status_message 'Creating output directory'
 output="$(./libexec/make_output_directory.sh)"
 
+status_message 'Creating Python virtual environment with packages'
+output="$output" ./libexec/make_virtualenv.sh
+
 status_message 'Reformatting sentences'
 filename="$1" ./libexec/untab_sentences.sh > "$output/untabbed.txt"
 
@@ -21,3 +24,9 @@ status_message 'Parsing OpenIE output to get permutations'
 
 status_message 'Running permutations through Semafor'
 output="$output" ./libexec/get_semafor_output.sh
+
+status_message 'Finding best Semafor permutations'
+./libexec/find_best_semafor_permutations.py "$output/semafor_output.xml"
+
+status_message 'Deactivating Python virtual environment'
+deactivate

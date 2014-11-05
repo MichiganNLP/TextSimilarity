@@ -2,7 +2,7 @@
 set -e
 
 DIRNAME="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$DIRNAME/config.sh"
+source "$DIRNAME/config"
 
 if [ -d "$OUTPUT_DIRECTORY" ]; then
   rm -rf "$OUTPUT_DIRECTORY"

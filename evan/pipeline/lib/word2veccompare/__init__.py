@@ -5,6 +5,9 @@ from sys import argv
 import array
 
 
+vocab = None
+
+
 def read_int_from(file):
     result = ''
     c = ''
@@ -55,21 +58,15 @@ def cosine_distance(a, b):
     denominator = sqrt(a_squared_sum) * sqrt(b_squared_sum)
     return float(numerator) / float(denominator)
 
-def compare(word_a, word_b, vocab):
+def compare(word_a, word_b):
+    global vocab
     if (word_a not in vocab) or (word_b not in vocab):
         return None
     a = vocab[word_a]
     b = vocab[word_b]
     return cosine_distance(a, b)
 
-def main(vocab_path, pairs_path):
+def initialize_vocabulary(vocab_path):
+    global vocab
     with open(vocab_path, 'rb') as vocab_file:
         vocab = parse_vocab_file(vocab_file)
-        with open(pairs_path, 'r') as pairs_file:
-            for line in pairs_file:
-                (word_a, word_b) = line.split()
-                distance = compare(word_a, word_b, vocab)
-                print word_a, word_b, distance
-
-if __name__ == '__main__':
-    main(argv[1], argv[2])
